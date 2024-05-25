@@ -16,6 +16,20 @@ Mem::Mem(void) {
     std::memset((void *)ptr, 0x00, 2048);
 };
 
+void Mem::fetch(const char *filename) {
+    FILE *file = nullptr;
+    file = fopen(filename, "rb");
+
+    assert(file != nullptr);
+
+    // litte end
+    if (fread((void *)(this->ptr), sizeof(uint8_t), this->DEPTH, file)) {
+        std::printf("load prog!\n");
+    }
+
+    fclose(file);
+}
+
 uint8_t Mem::read(uint16_t Address) const {
     assert(Address < 2048);
     return *(this->ptr + Address);
@@ -26,10 +40,10 @@ void Mem::write(uint16_t Address, uint8_t Value) {
 };
 
 void Mem::debug(uint16_t Address) const {
-    std::printf("%x", *(this->ptr + Address));
+    std::printf("%x\n", *(this->ptr + Address));
 };
 
-Mem::~Mem() { delete ptr; }
+Mem::~Mem() { delete[] ptr; }
 
 // test of Mem
 // PASS!!!!!

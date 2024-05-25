@@ -11,6 +11,8 @@ private:
 public:
     Mem(void);
 
+    void fetch(const char *);
+
     uint8_t read(uint16_t) const;
 
     void write(uint16_t, uint8_t);

@@ -3,21 +3,21 @@
 
 #include "cstdint"
 
-typedef enum { zero, rd, rs1, rs2 } Reg_T;
-
 class Register {
 private:
-    uint32_t reg;
-    Reg_T type;
+    uint32_t *reg = nullptr;
+    const uint16_t DEPTH = 32;
 
 public:
-    Register(Reg_T type_);
+    Register();
 
-    uint32_t read(void) const;
+    uint32_t read(uint8_t reg_n) const;
 
-    void write(uint32_t);
+    void write(const uint32_t, uint8_t);
 
-    void debug(uint16_t) const;
+    void debug(uint8_t reg_n) const;
+
+    ~Register();
 };
 
 #endif //__REGISTER_H__
