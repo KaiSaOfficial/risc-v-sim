@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <cstring>
 
-#include "Register.h"
+#include "register.h"
 
 Register::Register(void) {
     this->reg = new uint32_t[DEPTH];

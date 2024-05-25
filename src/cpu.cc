@@ -3,28 +3,22 @@
 #include <cstring>
 #include <iostream>
 
-#include "Mem.h"
-#include "Register.h"
+#include "bus.h"
+#include "register.h"
 
-uint32_t read_instruction(const Mem *mem, uint32_t *pc) {
-    uint32_t op = 0x00000000;
+uint32_t read_instruction(const Bus *bus, const uint64_t pc) {
+    uint64_t op = 0x00000000;
+    bus->read(pc, 32, &op);
+    uint32_t ins = op & 0xFFFFFFFF;
 
-    op |= mem->read(*pc + 0) << 0;
-    op |= mem->read(*pc + 1) << 8;
-    op |= mem->read(*pc + 2) << 16;
-    op |= mem->read(*pc + 3) << 24;
-
-    *pc = *pc + 4;
-    return op;
+    return ins;
 }
-
-void run(void) {}
 
 int main(int argc, const char *argv[]) {
     Register reg;
+    Bus bus;
 
-    uint32_t pc = 0x00;
-    Mem mem;
+    uint64_t pc = 0x80000000;
 
     if (argc < 3) {
         std::cerr << "Error: No bin file." << std::endl;
@@ -32,10 +26,10 @@ int main(int argc, const char *argv[]) {
         return 1; // 返回错误状态码
     }
 
-    mem.fetch(argv[2]);
+    bus.init(argv[2]);
 
     while (1) {
-        uint32_t instruction = read_instruction(&mem, &pc);
+        uint32_t instruction = read_instruction(&bus, pc);
         uint8_t opcode = instruction & 0x7F;
 
         switch (opcode) {
@@ -67,6 +61,8 @@ int main(int argc, const char *argv[]) {
                     default: std::printf("Unknown support funct7:%x", funct7);
                 }
 
+                pc = pc + 4;
+
                 break;
             };
 
@@ -79,11 +75,13 @@ int main(int argc, const char *argv[]) {
                 uint32_t result = reg.read(rs1) + imm;
                 reg.write(result, rd);
 
+                pc = pc + 4;
+
                 break;
             }
 
             default: {
-                reg.debug(31);
+                reg.debug(30);
                 std::printf("Unknow ins\n");
                 return 1;
             }
