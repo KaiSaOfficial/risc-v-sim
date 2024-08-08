@@ -18,7 +18,7 @@ int main(int argc, const char *argv[]) {
     Register reg;
     Bus bus;
 
-    uint64_t pc = 0x80000000;
+    uint64_t pc = 0x8000'0000;
 
     if (argc < 3) {
         std::cerr << "Error: No bin file." << std::endl;

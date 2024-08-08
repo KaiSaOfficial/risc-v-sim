@@ -4,7 +4,7 @@
 
 Bus::Bus() { this->mem = new Mem; }
 
-void Bus::init(const char *filename) { mem->load_pro(filename); }
+void Bus::init(const char *filename) { mem->load_bin(filename); }
 
 uint64_t Bus::read(const uint64_t addr, const uint8_t size,
                    uint64_t *values) const {
