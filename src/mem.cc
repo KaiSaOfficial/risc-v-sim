@@ -1,10 +1,9 @@
-#include "cassert"
-#include "cstdint"
-#include "cstdio"
-#include "cstring"
+#include <bits/stdint-uintn.h>
+#include <cstring>
 #include <cassert>
 #include <cstdint>
 
+#include "debug.h"
 #include "mem.h"
 
 Mem::Mem(void) {
@@ -12,21 +11,25 @@ Mem::Mem(void) {
     assert(PRT_MEM != nullptr);
 
     std::memset((void *)PRT_MEM, 0x00, this->DRAM_SIZE);
+    Log("physical memory area [%p, %p]", PRT_MEM, PRT_MEM + this->DRAM_SIZE);
 };
 
-void Mem::load_pro(const char *filename) {
+uint64_t Mem::load_bin(const char *filename) {
     FILE *file = nullptr;
     file = fopen(filename, "rb");
-
     assert(file != nullptr);
 
-    // litte end
-    if (fread((void *)(this->PRT_MEM), sizeof(uint8_t), this->DRAM_SIZE,
-              file)) {
-        std::printf("load prog!\n");
-    }
+    fseek(file, 0, SEEK_END);
+    uint64_t size = ftell(file);
+    Log("The image is %s, size = %ld", filename, size);
 
+    fseek(file, 0, SEEK_SET);
+    int ret = fread((void *)(this->PRT_MEM), sizeof(uint8_t), size, file);
+
+    assert(ret == size);
     fclose(file);
+
+    return size;
 }
 
 uint64_t Mem::read(const uint64_t addr, const uint8_t size,
@@ -73,25 +76,3 @@ void Mem::debug(uint16_t addr) const {
 };
 
 Mem::~Mem() { delete[] PRT_MEM; }
-
-// test of Mem
-// PASS!!!!!
-/*
-int main(int arg, const char *argv[]) {
-    Mem mem;
-
-    for (uint16_t i = 0; i < 2048; i++) {
-        std::printf("%d: \t value: %d\n", i, mem.read(i));
-    }
-
-    for (uint16_t i = 0; i < 2048; i++) {
-        mem.write(i, i);
-    }
-
-    for (uint16_t i = 0; i < 2048; i++) {
-        std::printf("%d: \t value: %d\n", i, mem.read(i));
-    }
-
-    return 0;
-}
-*/
