@@ -29,7 +29,7 @@ target(project_name)
     set_warnings("all")
     set_languages("c11", "cxx17")
     add_files("./src/**.cc")
-    add_includedirs("./include", "./include/utils")
+    add_includedirs("./include", "./include/utils", "./include/ISA")
 
 
 on_run(function(target)
