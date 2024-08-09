@@ -1,32 +1,73 @@
 #include <cstdint>
-#include <cstdio>
-#include <cstring>
 #include <iostream>
 
-#include "bus.h"
+#include "utils.h"
+#include "cpu.h"
 #include "register.h"
+#include "decoder.h"
 
-uint32_t read_instruction(const Bus *bus, const uint64_t pc) {
-    uint64_t op = 0x00000000;
-    bus->read(pc, 32, &op);
-    uint32_t ins = op & 0xFFFFFFFF;
+Cpu::Cpu(void) {
+    this->bus = new Bus;
+    this->reg = new Register;
+    this->pc = 0x8000'0000;
+    this->state = CPU_STOP;
+}
 
-    return ins;
+void Cpu::Cpu_init(const char *filename) {
+    // load Bin
+    this->bus->init(filename);
+
+    // $0: 0000'0000
+    this->reg->write(0x0000'0000, 0);
+}
+
+void Cpu::ifetch(uint32_t *ins) {
+    uint64_t op = 0x0000'0000'0000'0000;
+    bus->read(this->pc, 32, &op);
+
+    *ins = op & 0xffff'ffff;
+}
+
+void Cpu::decode_operand(uint32_t instruction, uint32_t *rd, uint32_t *src1,
+                         uint32_t *src2, uint32_t *imm, int32_t type) {
+    uint8_t rs1 = (instruction >> 15) & 0x1f;
+    uint8_t rs2 = (instruction >> 20) & 0x1f;
+    *rd = (instruction >> 7) & 0x1f;
+
+    switch (type) {
+        case TYPE_I: {
+            *src1 = this->reg->read(rs1);
+            *imm = (instruction >> 20) & 0xff'f;
+            break;
+        }
+        case TYPE_U: {
+            *imm = (instruction >> 12) & 0xf'ffff;
+            break;
+        }
+        case TYPE_S: {
+            *src1 = this->reg->read(rs1);
+            *src2 = this->reg->read(rs2);
+            *imm = ((instruction >> 5) & 0x1f) |
+                   (((instruction >> 25) & 0x7f) << 5);
+            break;
+        }
+    }
+}
+
+void Cpu::decode_exec(void) {
+    uint32_t rd = 0;
+    uint32_t src1 = 0, src2 = 0, imm = 0;
 }
 
 int main(int argc, const char *argv[]) {
-    Register reg;
-    Bus bus;
-
-    uint64_t pc = 0x8000'0000;
-
     if (argc < 3) {
         std::cerr << "Error: No bin file." << std::endl;
         std::cerr << "Usage: program_name - <filename>.bin" << std::endl;
-        return 1; // 返回错误状态码
+        return 1;
     }
 
-    bus.init(argv[2]);
+    Cpu cpu;
+    cpu.Cpu_init(argv[2]);
 
     while (1) {
         uint32_t instruction = read_instruction(&bus, pc);
@@ -81,7 +122,7 @@ int main(int argc, const char *argv[]) {
             }
 
             default: {
-                reg.debug(30);
+                reg.reg_display();
                 std::printf("Unknow ins\n");
                 return 1;
             }

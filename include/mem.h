@@ -19,15 +19,10 @@ private:
 public:
     Mem(void);
     uint64_t load_bin(const char *);
-
     uint64_t read(const uint64_t addr, const uint8_t size,
                   uint64_t *values) const;
-
     uint64_t write(const uint64_t addr, const uint8_t size,
                    const uint64_t values);
-
-    void debug(uint16_t addr) const;
-
     ~Mem();
 };
 

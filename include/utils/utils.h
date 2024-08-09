@@ -4,7 +4,7 @@
 #include <cstdio>
 #include <cstdint>
 
-typedef enum { CPU_RUNNING, CPU_STOP, CPU_END, CPU_ABORT, CPU_QUI } CPU_State;
+typedef enum { CPU_RUNNING, CPU_STOP, CPU_END, CPU_ABORT, CPU_QUIT } CPU_State;
 
 // ------------- log color -------------
 #define ANSI_FG_BLACK "\33[1;30m"
@@ -24,6 +24,10 @@ typedef enum { CPU_RUNNING, CPU_STOP, CPU_END, CPU_ABORT, CPU_QUI } CPU_State;
 #define ANSI_BG_CYAN "\33[1;46m"
 #define ANSI_BG_WHITE "\33[1;47m"
 #define ANSI_NONE "\33[0m"
+
+#define str(x) str_temp(x)
+// strlen() for string constant
+#define STRLEN(CONST_STR) (sizeof(CONST_STR) - 1)
 
 #define ANSI_FMT(str, fmt) fmt str ANSI_NONE
 

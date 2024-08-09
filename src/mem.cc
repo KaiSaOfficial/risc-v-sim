@@ -71,8 +71,4 @@ uint64_t Mem::write(const uint64_t addr, const uint8_t size,
     return OK;
 };
 
-void Mem::debug(uint16_t addr) const {
-    std::printf("%x\n", *(this->PRT_MEM + addr));
-};
-
 Mem::~Mem() { delete[] PRT_MEM; }

@@ -1,4 +1,36 @@
 #ifndef __CPU_H__
 #define __CPU_H__
 
+#include <cstdint>
+#include "utils.h"
+#include "bus.h"
+#include "register.h"
+
+class Cpu {
+private:
+    // Bus file
+    Bus *bus;
+
+    // Register Files
+    Register *reg;
+    uint32_t pc;
+
+    // CPU state
+    CPU_State state;
+
+public:
+    Cpu();
+
+    // Load program && init Reg and Mem
+    void Cpu_init(const char *filename);
+
+    // fecth ins from mem
+    void ifetch(uint32_t *);
+
+    void decode_operand(uint32_t instruction, uint32_t *rd, uint32_t *src1,
+                        uint32_t *src2, uint32_t *imm, int32_t type);
+
+    void decode_exec(void);
+};
+
 #endif //__CPU_H__
