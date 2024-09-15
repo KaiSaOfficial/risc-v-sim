@@ -9,28 +9,29 @@
 class Cpu {
 private:
     // Bus file
-    Bus *bus;
+    Bus *const bus;
 
     // Register Files
-    Register *reg;
+    uint32_t *const reg;
     uint32_t pc;
 
-    // CPU state
-    CPU_State state;
+    void decode_operand(uint32_t instruction, uint32_t *rd, uint32_t *src1,
+                        uint32_t *src2, uint32_t *imm, int32_t type);
 
 public:
     Cpu();
 
     // Load program && init Reg and Mem
-    void Cpu_init(const char *filename);
+    void cpu_init(const char *filename);
 
     // fecth ins from mem
     void ifetch(uint32_t *);
 
-    void decode_operand(uint32_t instruction, uint32_t *rd, uint32_t *src1,
-                        uint32_t *src2, uint32_t *imm, int32_t type);
+    void decode_exec(const uint32_t ins);
 
-    void decode_exec(void);
+    void debug_reg(void) const;
+    // CPU state
+    CPU_Info state;
 };
 
 #endif //__CPU_H__

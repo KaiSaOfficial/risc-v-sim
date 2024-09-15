@@ -3,8 +3,15 @@
 
 #include <cstdio>
 #include <cstdint>
+#include <cassert>
 
 typedef enum { CPU_RUNNING, CPU_STOP, CPU_END, CPU_ABORT, CPU_QUIT } CPU_State;
+
+typedef struct {
+    CPU_State state;
+    uint32_t halt_pc;
+    uint32_t halt_ret;
+} CPU_Info;
 
 // ------------- log color -------------
 #define ANSI_FG_BLACK "\33[1;30m"
@@ -28,6 +35,13 @@ typedef enum { CPU_RUNNING, CPU_STOP, CPU_END, CPU_ABORT, CPU_QUIT } CPU_State;
 #define str(x) str_temp(x)
 // strlen() for string constant
 #define STRLEN(CONST_STR) (sizeof(CONST_STR) - 1)
+
+// macro concatenation
+#define concat_temp(x, y) x##y
+#define concat(x, y) concat_temp(x, y)
+#define concat3(x, y, z) concat(concat(x, y), z)
+#define concat4(x, y, z, w) concat3(concat(x, y), z, w)
+#define concat5(x, y, z, v, w) concat4(concat(x, y), z, v, w)
 
 #define ANSI_FMT(str, fmt) fmt str ANSI_NONE
 

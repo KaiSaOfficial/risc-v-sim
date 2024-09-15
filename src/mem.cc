@@ -6,8 +6,7 @@
 #include "debug.h"
 #include "mem.h"
 
-Mem::Mem(void) {
-    PRT_MEM = new uint8_t[this->DRAM_SIZE];
+Mem::Mem(void) : PRT_MEM(new uint8_t[this->DRAM_SIZE]) {
     assert(PRT_MEM != nullptr);
 
     std::memset((void *)PRT_MEM, 0x00, this->DRAM_SIZE);

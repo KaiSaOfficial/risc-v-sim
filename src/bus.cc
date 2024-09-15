@@ -2,7 +2,7 @@
 #include <cstdint>
 #include "mem.h"
 
-Bus::Bus() { this->mem = new Mem; }
+Bus::Bus() : mem(new Mem) {}
 
 void Bus::init(const char *filename) { mem->load_bin(filename); }
 

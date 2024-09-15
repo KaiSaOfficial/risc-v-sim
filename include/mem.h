@@ -11,7 +11,7 @@
 // Mem Construction
 class Mem {
 private:
-    uint8_t *PRT_MEM = nullptr;                              // ptr of Mem
+    uint8_t *const PRT_MEM = nullptr;                        // ptr of Mem
     constexpr static uint64_t DRAM_SIZE = 1024 * 1024 * 128; // DRAM_SIZE of Mem
     const uint64_t DRAM_BASE = 0x8000'0000;
     const uint64_t DRAM_END = DRAM_SIZE + DRAM_BASE - 1;

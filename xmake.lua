@@ -5,7 +5,7 @@ local extension = ".bin"
 set_project(project_name)
 set_version("v0.2")
 
-add_rules("mode.debug", "mode.release")
+add_rules("mode.debug")
 
 local RISCV_Bin = "Rom_pro/build/asm_pro.bin"
 
@@ -31,7 +31,6 @@ target(project_name)
     add_files("./src/**.cc")
     add_includedirs("./include", "./include/utils", "./include/ISA")
 
-
 on_run(function(target)
-    os.exec("%s - %s", target_dir.."/"..project_name..extension,"Rom_pro/build/asm_pro.bin")
+    os.exec("%s %s", target_dir.."/"..project_name..extension, "/home/subingdong/risc-v-sim/Rom_pro/build/asm_pro.bin")
 end)

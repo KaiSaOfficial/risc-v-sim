@@ -5,7 +5,7 @@
 
 class Bus {
 private:
-    Mem *mem;
+    Mem *const mem;
 
 public:
     Bus();

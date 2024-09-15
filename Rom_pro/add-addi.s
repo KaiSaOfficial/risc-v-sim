@@ -1,12 +1,15 @@
-.global _start
+.text
+    .globl _start     # main
+
 _start:
-    addi x30, x0, 1
-    addi x30, x30, 2
-    addi x30, x30, 3
-    addi x30, x30, 4
-    addi x30, x30, 5
-    addi x30, x30, 6
-    addi x30, x30, 7
-    addi x30, x30, 8
-    addi x30, x30, 9
-    addi x30, x30, 10
+    li t0, 1          # t0 -> 1
+    li t1, 100        # t1 -> 100
+    li t2, 0          # t2 -> 0
+
+sum_loop:
+    add t2, t2, t0    # t2 = t2 + t0
+    addi t0, t0, 1    # t0 = t0 + 1
+    blt t0, t1, sum_loop # t0 < t1, jump loop
+
+    # 退出程序
+    ebreak            # software break point

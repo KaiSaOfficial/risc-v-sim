@@ -5,6 +5,9 @@ enum {
     TYPE_I,
     TYPE_U,
     TYPE_S,
+    TYPE_J,
+    TYPE_B,
+    TYPE_R,
     TYPE_N, // none
 };
 
