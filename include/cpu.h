@@ -16,7 +16,7 @@ private:
     uint32_t pc;
 
     void decode_operand(uint32_t instruction, uint32_t *rd, uint32_t *src1,
-                        uint32_t *src2, uint32_t *imm, int32_t type);
+                        uint32_t *src2, int32_t *imm, int32_t type);
 
 public:
     Cpu();
@@ -30,6 +30,8 @@ public:
     void decode_exec(const uint32_t ins);
 
     void debug_reg(void) const;
+
+    void debug_mem(const uint64_t addr) const;
     // CPU state
     CPU_Info state;
 };

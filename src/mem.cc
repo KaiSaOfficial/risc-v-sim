@@ -53,7 +53,7 @@ uint64_t Mem::read(const uint64_t addr, const uint8_t size,
 
 uint64_t Mem::write(const uint64_t addr, const uint8_t size,
                     const uint64_t values) {
-    uint64_t value = 0x00;
+    uint64_t value = values;
 
     if (size != 8 && size != 16 && size != 32 && size != 64) {
         return StoreAMOAccessFault;

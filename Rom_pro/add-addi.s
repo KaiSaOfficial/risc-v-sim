@@ -1,3 +1,6 @@
+.data
+    result: .int      # sum
+
 .text
     .globl _start     # main
 
@@ -11,5 +14,8 @@ sum_loop:
     addi t0, t0, 1    # t0 = t0 + 1
     blt t0, t1, sum_loop # t0 < t1, jump loop
 
-    # 退出程序
+    la a0, result     # ld ra to a0
+    sw t2, 0(a0)      # wr t2 to result
+
+    # quit
     ebreak            # software break point

@@ -17,12 +17,12 @@ void set_nemu_state(Cpu *cpu, CPU_State state, uint32_t pc, uint32_t halt_ret) {
 Cpu::Cpu(void) : bus(new Bus), reg(new uint32_t[32]) {
     assert(this->reg != nullptr);
 
-    memset((void *)(this->reg), 0x00000000, 32);
+    memset((void *)(this->reg), 0x0000'0000, 32);
     Log("physical reg area [%p, %p]", this->reg, this->reg + 32);
 
     this->pc = 0x8000'0000;
 
-    set_nemu_state(this, CPU_STOP, 0x0000'0000, 0x0000'0000);
+    set_nemu_state(this, CPU_STOP, 0x8000'0000, 0x8000'0000);
 }
 
 void Cpu::cpu_init(const char *filename) {
@@ -32,7 +32,7 @@ void Cpu::cpu_init(const char *filename) {
     // $0: 0000'0000
     this->reg[0] = 0x0000'0000;
 
-    set_nemu_state(this, CPU_RUNNING, 0x0000'0000, 0x0000'0000);
+    set_nemu_state(this, CPU_RUNNING, 0x8000'0000, 0x8000'0000);
 }
 
 void Cpu::ifetch(uint32_t *ins) {
@@ -43,7 +43,7 @@ void Cpu::ifetch(uint32_t *ins) {
 }
 
 inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
-                                uint32_t *src1, uint32_t *src2, uint32_t *imm,
+                                uint32_t *src1, uint32_t *src2, int32_t *imm,
                                 int32_t type) {
     uint8_t rs1 = (instruction >> 15) & 0x1f;
     uint8_t rs2 = (instruction >> 20) & 0x1f;
@@ -54,6 +54,11 @@ inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
             *src1 = this->reg[rs1];
             // I 12-bits
             *imm = ((instruction >> 20) & 0xff'f) & 0xfff;
+
+            if (*imm & 0x0800) {
+                *imm |= 0xffff'f000;
+            }
+
             break;
         }
         case TYPE_U: {
@@ -66,6 +71,13 @@ inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
             *src2 = this->reg[rs2];
             *imm = (((instruction >> 7) & 0x1f) |
                     (((instruction >> 25) & 0x7f) << 5));
+
+            *imm = *imm & 0x1f'ffff;
+
+            if (*imm & 0x10'000) {
+                *imm |= 0xffe0'0000;
+            }
+
             break;
         }
         case TYPE_J: {
@@ -74,7 +86,13 @@ inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
                     ((instruction >> 21) & 0x3'ff) |
                     (((instruction >> 31) & 0x01) << 19))
                    << 1;
+
             *imm = *imm & 0x1f'ffff;
+
+            if (*imm & 0x10'000) {
+                *imm |= 0xffe0'0000;
+            }
+
             break;
         }
         case TYPE_B: {
@@ -85,12 +103,20 @@ inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
                      (((instruction >> 25) & 0x3f) << 4) |
                      (((instruction >> 31) & 0x01) << 11))
                     << 1);
+
+            // B 13-bits
             *imm = *imm & 0x1fff;
+
+            if (*imm & 0x1000) {
+                *imm |= 0xffff'e000;
+            }
+
             break;
         }
         case TYPE_R: {
             *src1 = this->reg[rs1];
             *src2 = this->reg[rs2];
+
             break;
         }
     }
@@ -98,10 +124,11 @@ inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
 
 void Cpu::decode_exec(const uint32_t ins) {
     uint32_t rd = 0;
-    uint32_t src1 = 0, src2 = 0, imm = 0;
+    uint32_t src1 = 0, src2 = 0;
+    int32_t imm = 0;
 
-    static uint32_t dnpc = 0;
-    uint32_t snpc = this->pc + 4;
+    static int32_t dnpc = 0;
+    int32_t snpc = this->pc + 4;
     dnpc = snpc;
 
 #define INSTPAT_MATCH(ins, name, type, ... /* execute body */) \
@@ -120,28 +147,28 @@ void Cpu::decode_exec(const uint32_t ins) {
             R(rd) = this->pc + imm);
     INSTPAT("??????? ????? ????? 010 ????? 00000 11", lw, I,
             uint64_t tmp = 0x0000'0000;
-            Mr(src1 + imm, 4, &tmp);
+            Mr(src1 + imm, 32, &tmp);
             R(rd) = (tmp & 0xffff'ffff)); // 从内存相应位置读出并写入到寄存器中
     INSTPAT("??????? ????? ????? 100 ????? 00000 11", lbu, I,
             uint64_t tmp = 0x0000'0000;
-            Mr(src1 + imm, 1, &tmp); R(rd) = (tmp & 0xffff'ffff));
+            Mr(src1 + imm, 8, &tmp); R(rd) = (tmp & 0xffff'ffff));
     INSTPAT("??????? ????? ????? 000 ????? 00000 11", lb, I,
             uint64_t tmp = 0x0000'0000;
-            Mr(src1 + imm, 1, &tmp); R(rd) = (tmp & 0x0000'00ff));
+            Mr(src1 + imm, 8, &tmp); R(rd) = (tmp & 0x0000'00ff));
     INSTPAT("??????? ????? ????? 001 ????? 00000 11", lh, I,
             uint64_t tmp = 0x0000'0000;
-            Mr(src1 + imm, 2, &tmp); R(rd) = (tmp & 0x0000'ffff));
+            Mr(src1 + imm, 16, &tmp); R(rd) = (tmp & 0x0000'ffff));
     INSTPAT("??????? ????? ????? 101 ????? 00000 11", lhu, I,
             uint64_t tmp = 0x0000'0000;
-            Mr(src1 + imm, 1, &tmp); R(rd) = tmp);
+            Mr(src1 + imm, 8, &tmp); R(rd) = tmp);
     INSTPAT("??????? ????? ????? 111 ????? 00100 11", andi, I,
             R(rd) = imm & src1);
     INSTPAT("??????? ????? ????? 000 ????? 01000 11", sb, S,
-            Mw(src1 + imm, 1, src2));
+            Mw(src1 + imm, 8, src2));
     INSTPAT("??????? ????? ????? 010 ????? 01000 11", sw, S,
-            Mw(src1 + imm, 4, src2)); // 向内存中写入
+            Mw(src1 + imm, 32, src2)); // 向内存中写入
     INSTPAT("??????? ????? ????? 001 ????? 01000 11", sh, S,
-            Mw(src1 + imm, 2, src2));
+            Mw(src1 + imm, 16, src2));
     INSTPAT("??????? ????? ????? ??? ????? 11011 11", jal, J,
             R(rd) = this->pc + 4;
             dnpc += imm - 4;); // jal指令
@@ -213,7 +240,6 @@ void Cpu::decode_exec(const uint32_t ins) {
             R(rd) = src1 ^ src2);
     INSTPAT("0000000 ????? ????? 110 ????? 01100 11", or, R,
             R(rd) = src1 | src2);
-
     INSTPAT("0000000 00001 00000 000 00000 11100 11", ebreak, N,
             set_nemu_state(this, CPU_STOP, this->pc, R(10))); // R(10) is $a0
 
@@ -226,8 +252,13 @@ void Cpu::decode_exec(const uint32_t ins) {
 
     R(0) = 0; // reset $zero to 0
     this->pc = dnpc;
-    printf("%x\n", imm);
-    printf("%x\n", this->pc);
 };
 
 void Cpu::debug_reg(void) const { reg_display(this->reg); }
+
+void Cpu::debug_mem(const uint64_t addr) const {
+    uint64_t value = 0;
+
+    this->bus->read(addr, 32, &value);
+    Debug("Mem: \t0x%-10lx\t%lu", addr, value);
+}

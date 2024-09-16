@@ -25,6 +25,7 @@ int main(int argc, const char *argv[]) {
     }
 
     cpu.debug_reg();
+    cpu.debug_mem(0x80000018);
 
     return 0;
 }
