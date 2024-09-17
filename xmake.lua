@@ -28,9 +28,10 @@ target(project_name)
 
     set_warnings("all")
     set_languages("c11", "cxx17")
+    set_optimize("fastest")
     add_files("./src/**.cc")
     add_includedirs("./include", "./include/utils", "./include/ISA")
 
 on_run(function(target)
-    os.exec("%s %s", target_dir.."/"..project_name..extension, "/home/subingdong/risc-v-sim/Rom_pro/build/asm_pro.bin")
+    os.exec("%s %s", target_dir.."/"..project_name..extension, "./Rom_pro/build/asm_pro.bin")
 end)

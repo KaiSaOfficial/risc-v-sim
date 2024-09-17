@@ -21,6 +21,7 @@ Cpu::Cpu(void) : bus(new Bus), reg(new uint32_t[32]) {
     Log("physical reg area [%p, %p]", this->reg, this->reg + 32);
 
     this->pc = 0x8000'0000;
+    this->reg[2] = 0x8000'0400;
 
     set_nemu_state(this, CPU_STOP, 0x8000'0000, 0x8000'0000);
 }
@@ -64,6 +65,7 @@ inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
         case TYPE_U: {
             // U 20-bits
             *imm = (((instruction >> 12) & 0xf'ffff) & 0xf'ffff) << 12;
+
             break;
         }
         case TYPE_S: {
@@ -72,10 +74,10 @@ inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
             *imm = (((instruction >> 7) & 0x1f) |
                     (((instruction >> 25) & 0x7f) << 5));
 
-            *imm = *imm & 0x1f'ffff;
+            *imm = *imm & 0x0fff;
 
-            if (*imm & 0x10'000) {
-                *imm |= 0xffe0'0000;
+            if (*imm & 0x0700) {
+                *imm |= 0xffff'f000;
             }
 
             break;
