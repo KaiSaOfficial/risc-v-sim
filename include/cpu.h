@@ -4,7 +4,6 @@
 #include <cstdint>
 #include "utils.h"
 #include "bus.h"
-#include "register.h"
 
 class Cpu {
 private:
