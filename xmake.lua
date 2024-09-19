@@ -33,5 +33,5 @@ target(project_name)
     add_includedirs("./include", "./include/utils", "./include/ISA")
 
 on_run(function(target)
-    os.exec("%s %s", target_dir.."/"..project_name..extension, "./Rom_pro/build/asm_pro.bin")
+    os.exec("%s %s", target_dir.."/"..project_name..extension, "./Rom_pro/build/os.bin")
 end)

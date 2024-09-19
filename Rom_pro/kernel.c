@@ -1,4 +1,4 @@
-#include "inc/freestanding.h"
+#include "./inc/freestanding.h"
 
 void start_kernel(void) {
     uint16_t sum = 0;

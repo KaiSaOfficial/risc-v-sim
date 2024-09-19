@@ -1,35 +1,35 @@
-# Build path
-BUILD_DIR = build
-TARGET = asm_pro
+CFLAGS = -Wl,-Ttext=0x0 -nostdlib -mno-relax --target=riscv32 -march=rv32i
 
-# Asm sources
-ASM_SOURCES = \
-./add-addi.s
+CC = clang
+OBJDUMP = llvm-objdump
 
-C_SOURCES = \
-./kernel.c
+SRCS_ASM = \
+	   start.S \
 
-# binaries
-#######################################
-AS = clang
-BIN = llvm-objcopy
+SRCS_C = \
+	kernel.c \
 
-CFLAGS = -Wl,-Ttext=0x0 -nostdlib -mno-relax --target=riscv64 -march=rv32i
+OBJS = $(SRCS_ASM:.S=.o)
+OBJS += $(SRCS_C:.c=.o)
 
-ASM_OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(ASM_SOURCES:.s=.o)))
-vpath %.s $(sort $(dir $(ASM_SOURCES)))
+.DEFAULT_GOAL := all
+all: os.elf
 
-C_OBJECTS += $(addprefix $(BUILD_DIR)/,$(notdir $(C_SOURCES:.c=.o)))
-vpath %.s $(sort $(dir $(C_SOURCES)))
+# start.o must be the first in dependency!
+os.elf: ${OBJS}
+	${CC} ${CFLAGS} -o os.elf  $^
+	@${OBJDUMP} -O binary os.elf os.bin
 
-all: Makefile | $(BUILD_DIR)
-	$(AS) -c $(CFLAGS) $(ASM_SOURCES) -o $(ASM_OBJECTS)
-	$(AS) -c $(CFLAGS) $(C_SOURCES) -o $(C_OBJECTS)
-	$(BIN) -O binary $(OBJECTS) $(C_OBJECTS) $(BUILD_DIR)/$(TARGET).bin
+%.o : %.c
+	${CC} ${CFLAGS} -c -o $@ $<
 
-$(BUILD_DIR):
-	mkdir $@
+%.o : %.S
+	${CC} ${CFLAGS} -c -o $@ $<
+
+.PHONY : code
+code: all
+	@${OBJDUMP} -S os.elf | less
 
 clean:
-	-rm -fR $(BUILD_DIR)
+	rm -fr *.o *.bin *.elf
 

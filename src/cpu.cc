@@ -21,7 +21,6 @@ Cpu::Cpu(void) : bus(new Bus), reg(new uint32_t[32]) {
     Log("physical reg area [%p, %p]", this->reg, this->reg + 32);
 
     this->pc = 0x8000'0000;
-    this->reg[2] = 0x8000'0400;
 
     set_nemu_state(this, CPU_STOP, 0x8000'0000, 0x8000'0000);
 }
@@ -44,7 +43,7 @@ void Cpu::ifetch(uint32_t *ins) {
 }
 
 inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
-                                uint32_t *src1, uint32_t *src2, int32_t *imm,
+                                uint32_t *src1, uint32_t *src2, uint32_t *imm,
                                 int32_t type) {
     uint8_t rs1 = (instruction >> 15) & 0x1f;
     uint8_t rs2 = (instruction >> 20) & 0x1f;
@@ -127,10 +126,10 @@ inline void Cpu::decode_operand(uint32_t instruction, uint32_t *rd,
 void Cpu::decode_exec(const uint32_t ins) {
     uint32_t rd = 0;
     uint32_t src1 = 0, src2 = 0;
-    int32_t imm = 0;
+    uint32_t imm = 0;
 
-    static int32_t dnpc = 0;
-    int32_t snpc = this->pc + 4;
+    static uint32_t dnpc = 0;
+    uint32_t snpc = this->pc + 4;
     dnpc = snpc;
 
 #define INSTPAT_MATCH(ins, name, type, ... /* execute body */) \

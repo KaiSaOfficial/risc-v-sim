@@ -1,21 +1,18 @@
-#include <cstdio>
 #include "cpu.h"
 #include "utils.h"
 #include "debug.h"
 
 int main(int argc, const char *argv[]) {
-    /*
     if (argc < 2) {
         Error("No correct input");
         Error("emu program.bin");
         return 1;
     }
-    */
 
-    const char *str = "/home/subingdong/risc-v-sim/Rom_pro/build/asm_pro.bin";
+    // const char *str = "/home/subingdong/risc-v-sim/Rom_pro/build/os.bin";
 
     Cpu cpu;
-    cpu.cpu_init(str);
+    cpu.cpu_init(argv[1]);
 
     uint32_t ins;
 
@@ -25,7 +22,6 @@ int main(int argc, const char *argv[]) {
     }
 
     cpu.debug_reg();
-    cpu.debug_mem(0x80000068);
 
     return 0;
 }
