@@ -7,6 +7,8 @@ void start_kernel(void) {
         sum = sum + i * i;
     }
 
+    asm volatile("ebreak");
+
     while (1) {
     }; // stop here!
 }

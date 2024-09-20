@@ -1,7 +1,9 @@
-CFLAGS = -Wl,-Ttext=0x0 -nostdlib -mno-relax --target=riscv32 -march=rv32i
+CROSS_COMPILE = riscv64-unknown-elf-
+CFLAGS = -nostdlib -fno-builtin -march=rv32im -mabi=ilp32 -g -Wall
 
-CC = clang
-OBJDUMP = llvm-objdump
+CC = ${CROSS_COMPILE}gcc
+OBJCOPY = ${CROSS_COMPILE}objcopy
+OBJDUMP = ${CROSS_COMPILE}objdump
 
 SRCS_ASM = \
 	   start.S \
@@ -18,7 +20,7 @@ all: os.elf
 # start.o must be the first in dependency!
 os.elf: ${OBJS}
 	${CC} ${CFLAGS} -o os.elf  $^
-	@${OBJDUMP} -O binary os.elf os.bin
+	${OBJCOPY} -O binary os.elf os.bin
 
 %.o : %.c
 	${CC} ${CFLAGS} -c -o $@ $<
@@ -32,4 +34,3 @@ code: all
 
 clean:
 	rm -fr *.o *.bin *.elf
-
