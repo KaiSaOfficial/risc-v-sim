@@ -7,7 +7,7 @@ set_version("v0.2")
 
 add_rules("mode.debug")
 
-local RISCV_Bin = "Rom_pro/build/asm_pro.bin"
+local RISCV_Bin = "Rom_pro/build/os.bin"
 
 -- define toolchain
 toolchain("Complie")
@@ -33,5 +33,5 @@ target(project_name)
     add_includedirs("./include", "./include/utils", "./include/ISA")
 
 on_run(function(target)
-    os.exec("%s %s", target_dir.."/"..project_name..extension, "./Rom_pro/build/os.bin")
+    os.exec("%s %s", target_dir.."/"..project_name..extension, RISCV_Bin)
 end)

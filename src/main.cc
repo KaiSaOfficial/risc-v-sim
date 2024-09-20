@@ -4,12 +4,9 @@
 
 int main(int argc, const char *argv[]) {
     if (argc < 2) {
-        Error("No correct input");
-        Error("emu program.bin");
+        Error("No correct input, Please type: RISC_EMU program.bin");
         return 1;
     }
-
-    // const char *str = "/home/subingdong/risc-v-sim/Rom_pro/build/os.bin";
 
     Cpu cpu;
     cpu.cpu_init(argv[1]);
