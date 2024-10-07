@@ -34,6 +34,8 @@ public:
     void debug_mem(const uint64_t addr) const;
     // CPU state
     CPU_Info state;
+
+    ~Cpu();
 };
 
 #endif //__CPU_H__

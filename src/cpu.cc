@@ -1,6 +1,6 @@
 #include <cstdint>
-#include <cstdio>
 #include <cstring>
+#include <vector>
 
 #include "utils.h"
 #include "cpu.h"
@@ -256,4 +256,9 @@ void Cpu::debug_mem(const uint64_t addr) const {
 
     this->bus->read(addr, 32, &value);
     Debug("Mem: \t0x%-10lx\t%lu", addr, value);
+}
+
+Cpu::~Cpu() {
+    delete bus;
+    delete[] reg;
 }
