@@ -1,6 +1,5 @@
 #include <cstdint>
 #include <cstring>
-#include <vector>
 
 #include "utils.h"
 #include "cpu.h"
