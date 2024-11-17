@@ -1,11 +1,16 @@
 #ifndef __BUS_H__
 #define __BUS_H__
 
-#include "mem.h"
+#include "./device/device.h"
+#include "./device/mem.h"
+#include "./device/ram.h"
+#include "./device/uart.h"
 
 class Bus {
 private:
-    Mem *const mem;
+    ROM *const rom;
+    RAM *const ram;
+    UART *const uart;
 
 public:
     Bus();

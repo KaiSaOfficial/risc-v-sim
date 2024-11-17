@@ -19,9 +19,9 @@ Cpu::Cpu(void) : bus(new Bus), reg(new uint32_t[32]) {
     memset((void *)(this->reg), 0x0000'0000, 32);
     Log("physical reg area [%p, %p]", this->reg, this->reg + 32);
 
-    this->pc = 0x8000'0000;
+    this->pc = 0x0800'0000;
 
-    set_nemu_state(this, CPU_STOP, 0x8000'0000, 0x8000'0000);
+    set_nemu_state(this, CPU_STOP, 0x0800'0000, 0x8000'0000);
 }
 
 void Cpu::cpu_init(const char *filename) {
@@ -31,7 +31,7 @@ void Cpu::cpu_init(const char *filename) {
     // $0: 0000'0000
     this->reg[0] = 0x0000'0000;
 
-    set_nemu_state(this, CPU_RUNNING, 0x8000'0000, 0x8000'0000);
+    set_nemu_state(this, CPU_RUNNING, 0x0800'0000, 0x8000'0000);
 }
 
 void Cpu::ifetch(uint32_t *ins) {
@@ -249,13 +249,6 @@ void Cpu::decode_exec(const uint32_t ins) {
 };
 
 void Cpu::debug_reg(void) const { reg_display(this->reg); }
-
-void Cpu::debug_mem(const uint64_t addr) const {
-    uint64_t value = 0;
-
-    this->bus->read(addr, 32, &value);
-    Debug("Mem: \t0x%-10lx\t%lu", addr, value);
-}
 
 Cpu::~Cpu() {
     delete bus;
