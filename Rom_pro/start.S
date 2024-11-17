@@ -1,7 +1,7 @@
 #include "inc/platform.h"
 
         # size of stack is 256 bytes
-        .equ    STACK_SIZE, 256
+        .equ     STACK_SIZE, 256
         .global _start
         .text
 _start:

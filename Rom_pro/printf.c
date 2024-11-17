@@ -1,4 +1,5 @@
 #include "./inc/freestanding.h"
+#include "./inc/printf.h"
 
 static int _vsnprintf(char *out, size_t n, const char *s, va_list vl) {
     int format = 0;

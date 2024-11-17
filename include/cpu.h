@@ -21,17 +21,16 @@ private:
 public:
     Cpu();
 
-    // Load program && init Reg and Mem
+    // Load program && init Reg and ROM
     void cpu_init(const char *filename);
 
-    // fecth ins from mem
+    // fecth ins from ROM
     void ifetch(uint32_t *);
 
     void decode_exec(const uint32_t ins);
 
     void debug_reg(void) const;
 
-    void debug_mem(const uint64_t addr) const;
     // CPU state
     CPU_Info state;
 
