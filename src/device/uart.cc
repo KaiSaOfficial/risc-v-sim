@@ -49,12 +49,15 @@ uint64_t UART::write(const uint64_t addr, const uint8_t size,
 
     for (uint8_t i = 0; i < nbytes; i++) {
         uint8_t offset = 8 * i;
-        char val = (value >> offset) & 0xFF;
+        uint8_t val = (value >> offset) & 0xFF;
         *(this->PRT_UART + index + i) = val;
-
-        putchar(val);
     }
 
+    if (0x04 <= index && index < 0x0c) {
+        for (uint8_t i = 0; i < nbytes; i++) {
+            putchar(char(*(this->PRT_UART + index + i)));
+        }
+    }
     return OK;
 };
 

@@ -17,6 +17,7 @@ public:
 
     uint64_t read(const uint64_t addr, const uint8_t size,
                   uint64_t *values) const;
+
     uint64_t write(const uint64_t addr, const uint8_t size,
                    const uint64_t values);
     ~ROM();
