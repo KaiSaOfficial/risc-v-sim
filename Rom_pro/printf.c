@@ -8,7 +8,7 @@ static int _vsnprintf(char *out, size_t n, const char *s, va_list vl) {
 
     for (; *s; s++) {
         if (format) {
-            switch (format) {
+            switch (*s) {
                 case 'l': {
                     longarg = 1;
                     break;
@@ -36,7 +36,7 @@ static int _vsnprintf(char *out, size_t n, const char *s, va_list vl) {
                     for (uint8_t i = hexdigits; i >= 0; i--) {
                         int d = (num >> (4 * i)) & 0xF;
                         if (out && pos < n) {
-                            out[pos] = (d < 10 ? '0' + d : 'a' + d - 10);
+                            *(out + pos) = (d < 10 ? '0' + d : 'a' + d - 10);
                         }
 
                         pos++;
@@ -63,7 +63,7 @@ static int _vsnprintf(char *out, size_t n, const char *s, va_list vl) {
 
                     for (int i = digits - 1; i >= 0; i--) {
                         if (out && pos + i < n) {
-                            *(out + i) = '0' + (num % 10);
+                            *(out + i + pos) = '0' + (num % 10);
                         }
                         num /= 10;
                     }
@@ -133,7 +133,7 @@ static int _vprintf(const char *s, va_list vl) {
     }
 
     _vsnprintf(out_buf, res + 1, s, vl);
-    // uart_puts(out_buf);
+    uart_puts(out_buf);
     return res;
 }
 

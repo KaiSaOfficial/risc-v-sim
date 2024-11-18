@@ -1,7 +1,7 @@
 #include "./inc/freestanding.h"
 #include "./inc/printf.h"
 
-int sum = 0;
+static int sum = 0;
 
 void start_kernel(void) {
     /* User code begin */
